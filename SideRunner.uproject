@@ -7,7 +7,13 @@
 		{
 			"Name": "SideRunner",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+		}
+	]
+	"Plugins": [
+		{
+			"Name": "Paper2D",
+			"Enabled": true
 		}
 	]
 }

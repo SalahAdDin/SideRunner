@@ -2,4 +2,9 @@
 
 
 #include "SideRunnerGameModeBase.h"
+#include "SideRunnerPaperCharacter.h"
 
+ASideRunnerGameModeBase::ASideRunnerGameModeBase()
+{
+    // DefaultPawnClass = ASideRunnerPaperCharacter::StaticClass();
+}

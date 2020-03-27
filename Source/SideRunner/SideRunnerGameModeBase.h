@@ -9,9 +9,12 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(minimalapi)
 class SIDERUNNER_API ASideRunnerGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ASideRunnerGameModeBase();
 	
 };

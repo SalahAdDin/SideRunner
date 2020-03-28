@@ -22,9 +22,9 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 
 	bool bDoubleJump;
 
-	class AGameModeBase* Ref_GameMode; 
+	class ASideRunnerGameModeBase* Ref_GameMode; 
 
-	UTextRenderComponent* TextComponent;
+	class UTextRenderComponent* TextComponent;
 
 	void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;

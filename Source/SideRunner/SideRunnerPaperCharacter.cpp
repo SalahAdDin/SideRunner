@@ -4,8 +4,15 @@
 #include "SideRunnerPaperCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraTypes.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Engine/EngineTypes.h" 	
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/MovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PaperFlipbookComponent.h"
 #include "SideRunnerGameModeBase.h"
 
 
@@ -38,6 +45,7 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
 
     GetCharacterMovement()->bConstrainToPlane = true;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0.f, -1.f, 0.f));
+	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 
     GetSprite()->SetIsReplicated(true);
     bReplicates = true;
@@ -48,18 +56,18 @@ void ASideRunnerPaperCharacter::Tick(float DeltaSeconds){
     Super::Tick(DeltaSeconds);
 
     // TODO: implements Rotation Timeline here
-    GetSprite()->SetRelativeRotation(); // Rotation here
+    // GetSprite()->SetRelativeRotation(); // Rotation here
 }
 
 void ASideRunnerPaperCharacter::BeginPlay(){
     Super::BeginPlay();
 
-    Ref_GameMode = Cast<ASideRunnerGameModeBase>(GetGameMode());
+    Ref_GameMode = Cast<ASideRunnerGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 
 void ASideRunnerPaperCharacter::Move(){
-    if(GetMovementComponent()->IsMovingOnGround()){
+    if(GetCharacterMovement()->IsMovingOnGround()){
         Jump();
         bDoubleJump = true;
     } else if(bDoubleJump) {
@@ -68,6 +76,24 @@ void ASideRunnerPaperCharacter::Move(){
     }
 }
 
+
+void ASideRunnerPaperCharacter::OnDeath(){
+    if(!bDeath){
+        bDeath = false;
+        SetActorEnableCollision(false);
+        LaunchCharacter(FVector(0.f, 0.f, JumpVelocity * 2), true, true);
+
+        // TODO: Here make anotther timeline for OnDeathRotation
+        // GetSprite()->SetRelativeRotation(); // Other rotation here
+
+        // TODO: Delay
+        Ref_GameMode->GameOver();
+
+        // TODO: Delay
+        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+        GetCharacterMovement()->StopMovementImmediately();
+    }
+}
 
 void ASideRunnerPaperCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent){
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASideRunnerPaperCharacter::Move);

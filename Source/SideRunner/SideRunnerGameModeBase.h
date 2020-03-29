@@ -14,7 +14,20 @@ class SIDERUNNER_API ASideRunnerGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
+	int Score;
+	int HighScore;
+
+	class USideRunnerSaveGame* Ref_SaveGame; 
+
+	void BeginPlay() override;
+
 public:
 	ASideRunnerGameModeBase();
+
+	UFUNCTION(BlueprintCallable, Category=Behavior)
+	void GameOver();
+
+	UFUNCTION(BlueprintCallable, Category=Behavior)
+	void UpdateHighScore();
 	
 };

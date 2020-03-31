@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "PaperCharacter.h"
 #include "SideRunnerPaperCharacter.generated.h"
 
@@ -16,9 +17,13 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* SideViewCameraComponent;
+	FTimeline OnDeathRotation;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	FTimeline OnPlayRotation;
+
+	class UCurveFloat *DeathRotation;
+
+	class UCurveFloat *PlayRotation;
 
 	bool bDoubleJump;
 
@@ -40,6 +45,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category=Behavior)
 	void OnDeath();
+
+	UFUNCTION()
+    void RotatePlayer();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 

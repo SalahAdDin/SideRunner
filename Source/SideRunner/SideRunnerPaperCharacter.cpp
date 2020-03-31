@@ -6,12 +6,14 @@
 #include "Camera/CameraTypes.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Curves/CurveFloat.h"
 #include "Engine/EngineTypes.h" 	
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/MovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 #include "PaperFlipbookComponent.h"
 #include "SideRunnerGameModeBase.h"
 
@@ -49,20 +51,66 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
 
     GetSprite()->SetIsReplicated(true);
     bReplicates = true;
+
+    /* This is the way using a Blueprint Curve */
+    static ConstructorHelpers::FObjectFinder<UCurveFloat> PlayCurve(TEXT("/Game/Blueprints/Utils/Curve_PlayRotation_Float"));
+    check(PlayCurve.Succeeded());
+    PlayRotation = PlayCurve.Object;
+    
+    static ConstructorHelpers::FObjectFinder<UCurveFloat> DeathCurve(TEXT("/Game/Blueprints/Utils/Curve_DeathRotation_Float"));
+    check(DeathCurve.Succeeded());
+    DeathRotation = DeathCurve.Object;
+
+    /* This is the way creating the curve with code, it does not work for me 
+    PlayRotation = NewObject<UCurveFloat>();
+	PlayRotation->FloatCurve.AddKey(0.0f, 0.0f);
+	PlayRotation->FloatCurve.AddKey(1.0f, -360.0f);
+
+    DeathRotation = NewObject<UCurveFloat>();
+    DeathRotation->FloatCurve.AddKey(0.f, 0.f);
+    DeathRotation->FloatCurve.AddKey(1.f, -512.f);
+    */
+
+    FOnTimelineFloat TimelineCallback;
+    FOnTimelineEventStatic TimelineFinishedCallback;
+
+    TimelineCallback.BindUFunction(this, "RotatePlayer");
+    if(PlayRotation){ 
+        OnPlayRotation.AddInterpFloat(PlayRotation, TimelineCallback, TEXT("Player Rotation"));
+        OnPlayRotation.SetLooping(true);
+        OnPlayRotation.SetTimelineLength(1.f);
+        OnPlayRotation.SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+    } else{
+        UE_LOG(LogTemp, Warning, TEXT("There is no Curvefloat Object here!"));
+    }
+}
+
+
+void ASideRunnerPaperCharacter::RotatePlayer()
+{    
+    float TimelineValue = OnPlayRotation.GetPlaybackPosition();
+    
+    if(PlayRotation){
+        float PlayRotationFloatValue = PlayRotation->GetFloatValue(TimelineValue);
+        GetSprite()->SetRelativeRotation(FRotator(PlayRotationFloatValue, 0.f, 0.f));
+    } else {
+        UE_LOG(LogTemp, Warning, TEXT("There is no such CurveFloat"));
+
+    }
 }
 
 
 void ASideRunnerPaperCharacter::Tick(float DeltaSeconds){
     Super::Tick(DeltaSeconds);
-
-    // TODO: implements Rotation Timeline here
-    // GetSprite()->SetRelativeRotation(); // Rotation here
+    if(OnPlayRotation.IsPlaying()) OnPlayRotation.TickTimeline(DeltaSeconds);
 }
 
 void ASideRunnerPaperCharacter::BeginPlay(){
     Super::BeginPlay();
 
     Ref_GameMode = Cast<ASideRunnerGameModeBase>(GetWorld()->GetAuthGameMode());
+
+    OnPlayRotation.Play();
 }
 
 

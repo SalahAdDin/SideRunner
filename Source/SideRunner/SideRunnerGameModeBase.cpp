@@ -36,3 +36,8 @@ void ASideRunnerGameModeBase::UpdateHighScore(){
         UGameplayStatics::SaveGameToSlot(Ref_SaveGame, TEXT("Default"), 0);
     }
 }
+
+void ASideRunnerGameModeBase::UpdateScore(){
+    Score++;
+    UE_LOG(LogTemp, Warning, TEXT("Score: %d"), Score);
+}

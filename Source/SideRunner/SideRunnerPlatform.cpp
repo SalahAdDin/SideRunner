@@ -4,12 +4,13 @@
 #include "AI/NavigationSystemBase.h"
 #include "Components/BoxComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "SideRunnerGameModeBase.h"
+#include "SideRunnerPaperCharacter.h"
 #include "UObject/ConstructorHelpers.h"
-
 
 // Sets default values
 ASideRunnerPlatform::ASideRunnerPlatform()
@@ -29,6 +30,8 @@ ASideRunnerPlatform::ASideRunnerPlatform()
 	TriggerScore->SetWorldScale3D(FVector(1.f, 1.f, 15.f));
 	TriggerScore->AreaClass = FNavigationSystem::GetDefaultObstacleArea();
 
+	TriggerScore->OnComponentBeginOverlap.AddDynamic(this, &ASideRunnerPlatform::OnOverlapBegin);
+
 	// There is no a way to use FObjectFinder outside to the constructor
 	static ConstructorHelpers::FObjectFinder<UPaperSprite> BoxSprite(TEXT("/Game/Textures/Sprites/box_Sprite"));
 	check(BoxSprite.Succeeded());
@@ -37,7 +40,7 @@ ASideRunnerPlatform::ASideRunnerPlatform()
 	static ConstructorHelpers::FObjectFinder<UPaperSprite> BoxAltSprite(TEXT("/Game/Textures/Sprites/boxAlt_Sprite"));
 	check(BoxAltSprite.Succeeded());
 	BlockSprites.Add(BoxAltSprite.Object);
-	
+
 	InitialLifeSpan = 4.f;
 }
 
@@ -46,11 +49,13 @@ void ASideRunnerPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Ref_GameMode = Cast<ASideRunnerGameModeBase>(GetWorld()->GetAuthGameMode());
+	/* Doing the reference in this way breaks the system.
+		I decided getting the world in the function who calls it since it is the only place when this reference is used.
+		Ref_GameMode = GetWorld()->GetAuthGameMode<ASideRunnerGameModeBase>();
+		check(Ref_GameMode);
+	*/
 
 	TilesAmount = bInitialPlatform ? 10 : FMath::RandRange(MinBlocks, MaxBlocks);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Tiles Amount: %d"), TilesAmount);
 
 	FString BlockName;
 
@@ -58,25 +63,34 @@ void ASideRunnerPlatform::BeginPlay()
 	{
 		BlockName = "Block_" + FString::FromInt(i);
 
-		UPaperSpriteComponent* Block = NewObject<UPaperSpriteComponent>(this, UPaperSpriteComponent::StaticClass(), FName(*BlockName));
+		UPaperSpriteComponent *Block = NewObject<UPaperSpriteComponent>(this, UPaperSpriteComponent::StaticClass(), FName(*BlockName));
 
 		if (Block)
 		{
 			Block->RegisterComponent();
-            Block->AttachTo(this->RootComponent);
+			Block->AttachTo(this->RootComponent);
 			Block->SetRelativeLocation(FVector(i * 70.f, 0.0f, 0.f));
 			// Block->SetSprite(ConstructorHelpers::FObjectFinder<UPaperSprite> (FMath::RandBool() ? TEXT("/Game/Textures/Sprites/box_Sprite") : TEXT("/Game/Textures/Sprites/boxAlt_Sprite")).Object);
 			Block->SetSprite(FMath::RandBool() ? BlockSprites[0] : BlockSprites[1]);
 		}
 	}
 
-	if(bInitialPlatform){
-		if(Obstacle) Obstacle->DestroyComponent();
-		if(TriggerScore) TriggerScore->DestroyComponent();
-	} else {
+	if (bInitialPlatform)
+	{
+		if (Obstacle){
+			Obstacle->DestroyComponent();
+			}
+		if (TriggerScore){
+			TriggerScore->DestroyComponent();
+		}
+	}
+	else
+	{
 		float XLocation = FMath::RandRange(0, TilesAmount - 1) * 70;
-		if(Obstacle) Obstacle->SetRelativeLocation(FVector(XLocation, 0.f, 35.f));
-		if(TriggerScore) TriggerScore->SetRelativeLocation(FVector(XLocation, 0.f, 0.f));
+		if (Obstacle)
+			Obstacle->SetRelativeLocation(FVector(XLocation, 0.f, 35.f));
+		if (TriggerScore)
+			TriggerScore->SetRelativeLocation(FVector(XLocation, 0.f, 0.f));
 	}
 }
 
@@ -88,3 +102,28 @@ void ASideRunnerPlatform::Tick(float DeltaTime)
 	AddActorWorldOffset(FVector(DeltaTime * -WorldOffset, 0.f, 0.f));
 }
 
+void ASideRunnerPlatform::OnOverlapBegin(UPrimitiveComponent *OverlappedComp, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
+    // Other Actor is the actor that triggered the event. Check that is not ourself.
+    if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+    {
+        ASideRunnerPaperCharacter* Player = Cast<ASideRunnerPaperCharacter>(OtherActor);
+
+        if (Player)
+        {
+            if (!bInitialPlatform && !Player->bDeath)
+            {
+                UWorld* world = GetWorld();
+
+                if (world)
+                {
+                    ASideRunnerGameModeBase* GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
+                    if (GameMode)
+                    {
+                        GameMode->UpdateScore();
+                    }
+                }
+            }
+        }
+    }
+}

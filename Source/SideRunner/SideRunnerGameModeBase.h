@@ -29,5 +29,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category=Behavior)
 	void UpdateHighScore();
+
+	UFUNCTION(BlueprintCallable, Category=Behavior)
+	void UpdateScore();
 	
 };

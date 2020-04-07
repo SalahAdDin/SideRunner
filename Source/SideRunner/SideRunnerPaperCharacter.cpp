@@ -2,8 +2,8 @@
 
 
 #include "SideRunnerPaperCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "Camera/CameraTypes.h"
+// #include "Camera/CameraComponent.h"
+// #include "Camera/CameraTypes.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Curves/CurveFloat.h"
@@ -28,21 +28,21 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
     GetCapsuleComponent()->SetCapsuleHalfHeight(35.f);
     GetCapsuleComponent()->SetCapsuleRadius(35.f);
 
-    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-    CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 500.f;
-    CameraBoom->SocketOffset = FVector(0.f, 0.f, 75.f);
-    CameraBoom->bDoCollisionTest = false;
-    CameraBoom->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+    // CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    // CameraBoom->SetupAttachment(RootComponent);
+    // CameraBoom->TargetArmLength = 500.f;
+    // CameraBoom->SocketOffset = FVector(0.f, 0.f, 75.f);
+    // CameraBoom->bDoCollisionTest = false;
+    // CameraBoom->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
-    SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
-    SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
-    SideViewCameraComponent->OrthoWidth = 700.f;
-    SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    // SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
+    // SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
+    // SideViewCameraComponent->OrthoWidth = 700.f;
+    // SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     
-    CameraBoom->SetUsingAbsoluteRotation(true);
-    SideViewCameraComponent->bUsePawnControlRotation = false;
-    SideViewCameraComponent->bAutoActivate = true;
+    // CameraBoom->SetUsingAbsoluteRotation(true);
+    // SideViewCameraComponent->bUsePawnControlRotation = false;
+    // SideViewCameraComponent->bAutoActivate = true;
     GetCharacterMovement()->bOrientRotationToMovement = false;
 
     GetCharacterMovement()->bConstrainToPlane = true;
@@ -108,7 +108,12 @@ void ASideRunnerPaperCharacter::Tick(float DeltaSeconds){
 void ASideRunnerPaperCharacter::BeginPlay(){
     Super::BeginPlay();
 
-    Ref_GameMode = Cast<ASideRunnerGameModeBase>(GetWorld()->GetAuthGameMode());
+    UWorld *world = GetWorld();
+
+    if (world)
+    {
+        Ref_GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
+    }
 
     OnPlayRotation.Play();
 }
@@ -135,7 +140,10 @@ void ASideRunnerPaperCharacter::OnDeath(){
         // GetSprite()->SetRelativeRotation(); // Other rotation here
 
         // TODO: Delay
-        Ref_GameMode->GameOver();
+        if (Ref_GameMode)
+        {
+            Ref_GameMode->GameOver();
+        }
 
         // TODO: Delay
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);

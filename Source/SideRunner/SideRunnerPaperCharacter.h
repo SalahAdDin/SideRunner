@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
+#include "Engine/EngineTypes.h"
 #include "PaperCharacter.h"
 #include "SideRunnerPaperCharacter.generated.h"
 
@@ -15,8 +16,14 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* SideViewCameraComponent;
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	// class UCameraComponent* SideViewCameraComponent;
+
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	// class USpringArmComponent* CameraBoom;
+
+	// FTimerHandle DelayHandler;
+
 	FTimeline OnDeathRotation;
 
 	FTimeline OnPlayRotation;
@@ -27,7 +34,7 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 
 	bool bDoubleJump;
 
-	class ASideRunnerGameModeBase* Ref_GameMode; 
+	class ASideRunnerGameModeBase* Ref_GameMode;
 
 	class UTextRenderComponent* TextComponent;
 
@@ -35,16 +42,11 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=Behavior)
-	bool bDeath;
 
-	UPROPERTY(EditInstanceOnly, Category=Movement)
+	UPROPERTY(EditDefaultsOnly, Category=Movement)
 	float JumpVelocity = 500.f;
 
 	void Move();
-
-	UFUNCTION(BlueprintCallable, Category=Behavior)
-	void OnDeath();
 
 	UFUNCTION()
     void RotatePlayer();
@@ -52,9 +54,16 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 public:
+
+	UPROPERTY(BlueprintReadWrite, Category=Behavior)
+	bool bDeath;
+
 	ASideRunnerPaperCharacter();
 
-	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	UFUNCTION(BlueprintCallable, Category=Behavior)
+	void OnDeath();
+
+	// FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
+	// FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	
 };

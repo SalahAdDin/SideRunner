@@ -49,16 +49,12 @@ void ASideRunnerPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/* Doing the reference in this way breaks the system.
-		I decided getting the world in the function who calls it since it is the only place when this reference is used.
-		Ref_GameMode = GetWorld()->GetAuthGameMode<ASideRunnerGameModeBase>();
-		check(Ref_GameMode);
-	*/
 	UWorld *world = GetWorld();
 
 	if (world)
 	{
 		Ref_GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
+		check(Ref_GameMode);
 	}
 
 	TilesAmount = bInitialPlatform ? 10 : FMath::RandRange(MinBlocks, MaxBlocks);
@@ -119,7 +115,7 @@ void ASideRunnerPlatform::OnOverlapBegin(UPrimitiveComponent *OverlappedComp, AA
         {
             if (!bInitialPlatform && !Player->bDeath)
             {
-                
+                // If we don't check the value editor could be crash since Ref_GameMode could be nullptr some times.
 				if (Ref_GameMode)
 				{
 					Ref_GameMode->UpdateScore();

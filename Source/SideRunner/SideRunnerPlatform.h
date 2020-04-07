@@ -11,6 +11,8 @@ class SIDERUNNER_API ASideRunnerPlatform : public AActor
 {
 	GENERATED_BODY()
 
+	class ASideRunnerGameModeBase* Ref_GameMode;
+
 	/* For further developments: we can choose more than two types os block and add to the platform since the editor */
 	UPROPERTY()
 	TArray<class UPaperSprite *> BlockSprites;

@@ -54,6 +54,12 @@ void ASideRunnerPlatform::BeginPlay()
 		Ref_GameMode = GetWorld()->GetAuthGameMode<ASideRunnerGameModeBase>();
 		check(Ref_GameMode);
 	*/
+	UWorld *world = GetWorld();
+
+	if (world)
+	{
+		Ref_GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
+	}
 
 	TilesAmount = bInitialPlatform ? 10 : FMath::RandRange(MinBlocks, MaxBlocks);
 
@@ -113,16 +119,12 @@ void ASideRunnerPlatform::OnOverlapBegin(UPrimitiveComponent *OverlappedComp, AA
         {
             if (!bInitialPlatform && !Player->bDeath)
             {
-                UWorld* world = GetWorld();
-
-                if (world)
-                {
-                    ASideRunnerGameModeBase* GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
-                    if (GameMode)
-                    {
-                        GameMode->UpdateScore();
-                    }
-                }
+                
+				if (Ref_GameMode)
+				{
+					Ref_GameMode->UpdateScore();
+				}
+                
             }
         }
     }

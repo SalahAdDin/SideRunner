@@ -132,20 +132,20 @@ void ASideRunnerPaperCharacter::Move(){
 
 void ASideRunnerPaperCharacter::OnDeath(){
     if(!bDeath){
-        bDeath = false;
+        bDeath = true;
         SetActorEnableCollision(false);
         LaunchCharacter(FVector(0.f, 0.f, JumpVelocity * 2), true, true);
 
         // TODO: Here make anotther timeline for OnDeathRotation
         // GetSprite()->SetRelativeRotation(); // Other rotation here
 
-        // TODO: Delay
+        // TODO: Delay!!!
         if (Ref_GameMode)
         {
             Ref_GameMode->GameOver();
         }
 
-        // TODO: Delay
+        // TODO: Delay!!!
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
         GetCharacterMovement()->StopMovementImmediately();
     }

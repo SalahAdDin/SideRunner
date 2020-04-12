@@ -21,6 +21,7 @@ ASideRunnerGameModeBase::ASideRunnerGameModeBase()
 }
 
 void ASideRunnerGameModeBase::BeginPlay(){
+
     UWorld *world = GetWorld();
 
     if (world)
@@ -28,7 +29,8 @@ void ASideRunnerGameModeBase::BeginPlay(){
         Ref_GameInstance = world->GetGameInstance<USideRunnerGameInstance>();
     }
     
-    // GetSaveGame();
+    GetSaveGame();
+
     UGameplayStatics::SetGamePaused(GetWorld(), false);
     
     if(Ref_GameInstance){
@@ -41,6 +43,20 @@ void ASideRunnerGameModeBase::BeginPlay(){
 }
 
 void ASideRunnerGameModeBase::GetSaveGame(){
+
+    if (UGameplayStatics::DoesSaveGameExist(TEXT("Default"), 0)){
+        Ref_SaveGame = Cast<USideRunnerSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Default"), 0));
+        if(Ref_SaveGame) HighScore = Ref_SaveGame->HighScore;   
+    } else if(USideRunnerSaveGame* SaveGameInstance = Cast<USideRunnerSaveGame>(UGameplayStatics::CreateSaveGameObject(USideRunnerSaveGame::StaticClass()))){
+        Ref_SaveGame = SaveGameInstance;
+        if(Ref_SaveGame) {
+            Ref_SaveGame->HighScore = 0;
+            HighScore = Ref_SaveGame->HighScore;
+            UGameplayStatics::SaveGameToSlot(Ref_SaveGame, TEXT("Default"), 0);
+        }
+    }
+
+    Score = 0;
 
 }
 

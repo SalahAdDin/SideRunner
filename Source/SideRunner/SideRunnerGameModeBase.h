@@ -31,6 +31,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category=Behavior)
 	void GameOver();
+	
+	UFUNCTION(BlueprintCallable, Category=Behavior)
+	void GetSaveGame();
 
 	UFUNCTION(BlueprintCallable, Category=Behavior)
 	void UpdateHighScore();

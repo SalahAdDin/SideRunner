@@ -68,7 +68,7 @@ void ASideRunnerSpawner::SpawnPlatform(){
 		// 70 x 70 is the size of the spike sprite
 		float NewX = (PlatformLocation.X + (Ref_Platform->TilesAmount * 70)) + FMath::RandRange(150.f, 250.f);
 		// We want to spawn platforms in a wide range: downside and highside
-		float NewZ = FMath::Clamp(PlatformLocation.Z + FMath::RandRange(-150.f, 150.f), -150.f, 150.f);
+		float NewZ = FMath::Clamp(PlatformLocation.Z + FMath::RandRange(-150.f, 120.f), -150.f, 120.f);
 		
 		UWorld* world = GetWorld();
 

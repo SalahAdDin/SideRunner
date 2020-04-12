@@ -18,8 +18,7 @@ class SIDERUNNER_API ASpikesObstacle : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASpikesObstacle();
-
-public:	
+	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 };

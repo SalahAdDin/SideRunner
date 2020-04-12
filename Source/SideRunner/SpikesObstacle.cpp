@@ -10,7 +10,6 @@
 // Sets default values
 ASpikesObstacle::ASpikesObstacle()
 {
-	// PrimaryActorTick.bCanEverTick = true;
 	// Try to create the sprite component
 	Sprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpikeSprite"));
 	Sprite->SetSprite(ConstructorHelpers::FObjectFinder<UPaperSprite>(TEXT("/Game/Textures/Sprites/spikes_Sprite")).Object);
@@ -24,6 +23,7 @@ void ASpikesObstacle::NotifyActorBeginOverlap(AActor *OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
+	// Other Actor is the actor that triggered the event. Check that is not ourself.
 	if ((OtherActor != nullptr) && (OtherActor != this)){
 		ASideRunnerPaperCharacter* Character = Cast<ASideRunnerPaperCharacter>(OtherActor);
 

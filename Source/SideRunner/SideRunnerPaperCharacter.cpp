@@ -139,18 +139,27 @@ void ASideRunnerPaperCharacter::OnDeath(){
         // TODO: Here make anotther timeline for OnDeathRotation
         // GetSprite()->SetRelativeRotation(); // Other rotation here
 
-        // TODO: Delay!!!
-        if (Ref_GameMode)
-        {
-            Ref_GameMode->GameOver();
-        }
+        // This does not work: GetWorld()->GetTimerManager().SetTimer(DelayHandler, 0.2f, false);
+        GetWorld()->GetTimerManager().SetTimer(ShowGameOverScreenDelayHandler, this,  &ASideRunnerPaperCharacter::ShowGameOverScreen, 2.f);
 
-        // TODO: Delay!!!
-        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-        GetCharacterMovement()->StopMovementImmediately();
+        GetWorld()->GetTimerManager().SetTimer(StopMovementDelayHandler, this,  &ASideRunnerPaperCharacter::StopMovement, 4.f);
     }
 }
 
 void ASideRunnerPaperCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent){
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASideRunnerPaperCharacter::Move);
+}
+
+        // TODO: Delay!!!
+void ASideRunnerPaperCharacter::StopMovement(){
+    UE_LOG(LogTemp, Warning, TEXT("Character's timer expired!"));    
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+    GetCharacterMovement()->StopMovementImmediately();
+}
+
+void ASideRunnerPaperCharacter::ShowGameOverScreen(){
+    if (Ref_GameMode)
+    {
+        Ref_GameMode->GameOver();
+    }
 }

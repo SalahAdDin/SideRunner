@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "SideRunnerSpawner.generated.h"
 
@@ -10,6 +11,8 @@ UCLASS()
 class SIDERUNNER_API ASideRunnerSpawner : public AActor
 {
 	GENERATED_BODY()
+
+	FTimerHandle DelayHandler;
 
 	class ASideRunnerPlatform* Ref_Platform;	
 	

@@ -52,9 +52,7 @@ void ASideRunnerSpawner::BeginPlay()
 			Ref_Platform->bInitialPlatform = true;
 			check(Ref_Platform);
 
-			//TODO: Delay, It is spawning a two platfom at begin. It is possible it is setting the reference in the time: DELAY!
-
-			SpawnPlatform();
+			world->GetTimerManager().SetTimer(DelayHandler, this,  &ASideRunnerSpawner::SpawnPlatform, 0.5f);
 		}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("It seems you forgot to put the object to spawn(platform)"));

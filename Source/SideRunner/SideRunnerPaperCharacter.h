@@ -28,6 +28,9 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 
 	FTimeline OnPlayRotation;
 
+	FTimerHandle ShowGameOverScreenDelayHandler;
+	FTimerHandle StopMovementDelayHandler;
+
 	class UCurveFloat *DeathRotation;
 
 	class UCurveFloat *PlayRotation;
@@ -50,6 +53,12 @@ protected:
 
 	UFUNCTION()
     void RotatePlayer();
+
+	UFUNCTION()
+	void StopMovement();
+
+	UFUNCTION()
+	void ShowGameOverScreen();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 

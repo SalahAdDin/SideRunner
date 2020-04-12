@@ -2,8 +2,10 @@
 
 
 #include "SideRunnerGameModeBase.h"
-#include "Components/SlateWrapperTypes.h"	
+#include "Blueprint/UserWidget.h"
+#include "Components/SlateWrapperTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "SideRunnerGameInstance.h"
 #include "SideRunnerSaveGame.h"
 #include "SideRunnerPaperCharacter.h"
 
@@ -19,14 +21,41 @@ ASideRunnerGameModeBase::ASideRunnerGameModeBase()
 }
 
 void ASideRunnerGameModeBase::BeginPlay(){
+    UWorld *world = GetWorld();
+
+    if (world)
+    {
+        Ref_GameInstance = world->GetGameInstance<USideRunnerGameInstance>();
+    }
+    
+    // GetSaveGame();
+    UGameplayStatics::SetGamePaused(GetWorld(), false);
+    
+    if(Ref_GameInstance){
+        Ref_GameInstance->CallHUDWBP(); 
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("There is not a reference for game instance here."));
+    }
+
+}
+
+void ASideRunnerGameModeBase::GetSaveGame(){
 
 }
 
 void ASideRunnerGameModeBase::GameOver(){
     UpdateHighScore();
-    UGameplayStatics::SetGamePaused(GetWorld(), true);
-    // InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 
+    UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+    if(Ref_GameInstance){
+        Ref_GameInstance->Ref_HUD->SetVisibility(ESlateVisibility::Hidden);
+        Ref_GameInstance->CallGameOverWBP();
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("There is not a reference for game instance here."));
+    }
 }
 
 void ASideRunnerGameModeBase::UpdateHighScore(){

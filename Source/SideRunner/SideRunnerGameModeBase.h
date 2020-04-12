@@ -17,6 +17,7 @@ class SIDERUNNER_API ASideRunnerGameModeBase : public AGameModeBase
 	int Score;
 	int HighScore;
 
+	class USideRunnerGameInstance* Ref_GameInstance;
 	class USideRunnerSaveGame* Ref_SaveGame; 
 
 	void BeginPlay() override;

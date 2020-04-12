@@ -1,23 +1,25 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SideRunnerGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
-USideRunnerGameInstance::USideRunnerGameInstance(){
+USideRunnerGameInstance::USideRunnerGameInstance()
+{
     static ConstructorHelpers::FClassFinder<UUserWidget> HUDWidget(TEXT("/Game/Blueprints/HUD/WBP_HUD"));
-    if(HUDWidget.Class != NULL) HUDWidgetClass = HUDWidget.Class;
+    if (HUDWidget.Class != NULL)
+        HUDWidgetClass = HUDWidget.Class;
 
     static ConstructorHelpers::FClassFinder<UUserWidget> GameOverWidget(TEXT("/Game/Blueprints/HUD/WBP_GameOver"));
-    if(GameOverWidget.Class != NULL) GameOverWidgetClass = GameOverWidget.Class;
+    if (GameOverWidget.Class != NULL)
+        GameOverWidgetClass = GameOverWidget.Class;
 }
 
-
-void USideRunnerGameInstance::CallHUDWBP(){
-    if(Ref_HUD != NULL) {
-
+void USideRunnerGameInstance::CallHUDWBP()
+{
+    if (Ref_HUD != NULL)
+    {
         Ref_HUD->RemoveFromParent();
     }
 
@@ -26,11 +28,13 @@ void USideRunnerGameInstance::CallHUDWBP(){
     Ref_HUD->AddToViewport();
 }
 
-void USideRunnerGameInstance::CallGameOverWBP(){
-    if(Ref_GameOver != NULL) {
+void USideRunnerGameInstance::CallGameOverWBP()
+{
+    if (Ref_GameOver != NULL)
+    {
         Ref_GameOver->RemoveFromParent();
     }
-    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+    APlayerController *PlayerController = UGameplayStatics::GetPlayerController(this, 0);
     PlayerController->bShowMouseCursor = true;
 
     Ref_GameOver = CreateWidget<UUserWidget>(PlayerController, GameOverWidgetClass);

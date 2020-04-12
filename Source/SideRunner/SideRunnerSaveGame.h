@@ -16,5 +16,4 @@ class SIDERUNNER_API USideRunnerSaveGame : public USaveGame
 
 public:
 	int HighScore;
-	
 };

@@ -13,12 +13,11 @@ class SIDERUNNER_API ASpikesObstacle : public AActor
 
 	/** The main skeletal mesh associated with this Character (optional sub-object). */
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UPaperSpriteComponent* Sprite;
-	
-public:	
+	class UPaperSpriteComponent *Sprite;
+
+public:
 	// Sets default values for this actor's properties
 	ASpikesObstacle();
-	
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
+	virtual void NotifyActorBeginOverlap(AActor *OtherActor) override;
 };

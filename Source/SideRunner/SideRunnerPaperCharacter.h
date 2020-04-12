@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
+#include "CoreMinimal.h"
 #include "Engine/EngineTypes.h"
 #include "PaperCharacter.h"
 #include "SideRunnerPaperCharacter.generated.h"
@@ -25,7 +25,6 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 	// FTimerHandle DelayHandler;
 
 	FTimeline OnDeathRotation;
-
 	FTimeline OnPlayRotation;
 
 	FTimerHandle ShowGameOverScreenDelayHandler;
@@ -37,22 +36,21 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 
 	bool bDoubleJump;
 
-	class ASideRunnerGameModeBase* Ref_GameMode;
+	class ASideRunnerGameModeBase *Ref_GameMode;
 
-	class UTextRenderComponent* TextComponent;
+	class UTextRenderComponent *TextComponent;
 
 	void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
-
-	UPROPERTY(EditDefaultsOnly, Category=Movement)
+	UPROPERTY(EditDefaultsOnly, Category = Movement)
 	float JumpVelocity = 500.f;
 
 	void Move();
 
 	UFUNCTION()
-    void RotatePlayer();
+	void RotatePlayer();
 
 	UFUNCTION()
 	void StopMovement();
@@ -60,19 +58,17 @@ protected:
 	UFUNCTION()
 	void ShowGameOverScreen();
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent *InputComponent) override;
 
 public:
-
-	UPROPERTY(BlueprintReadWrite, Category=Behavior)
+	UPROPERTY(BlueprintReadWrite, Category = Behavior)
 	bool bDeath;
 
 	ASideRunnerPaperCharacter();
 
-	UFUNCTION(BlueprintCallable, Category=Behavior)
+	UFUNCTION(BlueprintCallable, Category = Behavior)
 	void OnDeath();
 
 	// FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	// FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	
 };

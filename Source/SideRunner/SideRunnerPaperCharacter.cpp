@@ -1,26 +1,25 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SideRunnerPaperCharacter.h"
 // #include "Camera/CameraComponent.h"
 // #include "Camera/CameraTypes.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Curves/CurveFloat.h"
-#include "Engine/EngineTypes.h" 	
+#include "Engine/EngineTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/MovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "UObject/ConstructorHelpers.h"
 #include "PaperFlipbookComponent.h"
 #include "SideRunnerGameModeBase.h"
-
+#include "UObject/ConstructorHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
-ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
+ASideRunnerPaperCharacter::ASideRunnerPaperCharacter()
+{
     bUseControllerRotationPitch = false;
     bUseControllerRotationYaw = true;
     bUseControllerRotationRoll = false;
@@ -39,7 +38,7 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
     // SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
     // SideViewCameraComponent->OrthoWidth = 700.f;
     // SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-    
+
     // CameraBoom->SetUsingAbsoluteRotation(true);
     // SideViewCameraComponent->bUsePawnControlRotation = false;
     // SideViewCameraComponent->bAutoActivate = true;
@@ -47,7 +46,7 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
 
     GetCharacterMovement()->bConstrainToPlane = true;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0.f, -1.f, 0.f));
-	GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
+    GetCharacterMovement()->SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::X);
 
     GetSprite()->SetIsReplicated(true);
     bReplicates = true;
@@ -56,7 +55,7 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
     static ConstructorHelpers::FObjectFinder<UCurveFloat> PlayCurve(TEXT("/Game/Blueprints/Utils/Curve_PlayRotation_Float"));
     check(PlayCurve.Succeeded());
     PlayRotation = PlayCurve.Object;
-    
+
     static ConstructorHelpers::FObjectFinder<UCurveFloat> DeathCurve(TEXT("/Game/Blueprints/Utils/Curve_DeathRotation_Float"));
     check(DeathCurve.Succeeded());
     DeathRotation = DeathCurve.Object;
@@ -75,37 +74,43 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter(){
     FOnTimelineEventStatic TimelineFinishedCallback;
 
     TimelineCallback.BindUFunction(this, "RotatePlayer");
-    if(PlayRotation){ 
+    if (PlayRotation)
+    {
         OnPlayRotation.AddInterpFloat(PlayRotation, TimelineCallback, TEXT("Player Rotation"));
         OnPlayRotation.SetLooping(true);
         OnPlayRotation.SetTimelineLength(1.f);
         OnPlayRotation.SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-    } else{
+    }
+    else
+    {
         UE_LOG(LogTemp, Warning, TEXT("There is no Curvefloat Object here!"));
     }
 }
 
-
 void ASideRunnerPaperCharacter::RotatePlayer()
-{    
+{
     float TimelineValue = OnPlayRotation.GetPlaybackPosition();
-    
-    if(PlayRotation){
+
+    if (PlayRotation)
+    {
         float PlayRotationFloatValue = PlayRotation->GetFloatValue(TimelineValue);
         GetSprite()->SetRelativeRotation(FRotator(PlayRotationFloatValue, 0.f, 0.f));
-    } else {
+    }
+    else
+    {
         UE_LOG(LogTemp, Warning, TEXT("There is no such CurveFloat"));
-
     }
 }
 
-
-void ASideRunnerPaperCharacter::Tick(float DeltaSeconds){
+void ASideRunnerPaperCharacter::Tick(float DeltaSeconds)
+{
     Super::Tick(DeltaSeconds);
-    if(OnPlayRotation.IsPlaying()) OnPlayRotation.TickTimeline(DeltaSeconds);
+    if (OnPlayRotation.IsPlaying())
+        OnPlayRotation.TickTimeline(DeltaSeconds);
 }
 
-void ASideRunnerPaperCharacter::BeginPlay(){
+void ASideRunnerPaperCharacter::BeginPlay()
+{
     Super::BeginPlay();
 
     UWorld *world = GetWorld();
@@ -118,20 +123,24 @@ void ASideRunnerPaperCharacter::BeginPlay(){
     OnPlayRotation.Play();
 }
 
-
-void ASideRunnerPaperCharacter::Move(){
-    if(GetCharacterMovement()->IsMovingOnGround()){
+void ASideRunnerPaperCharacter::Move()
+{
+    if (GetCharacterMovement()->IsMovingOnGround())
+    {
         Jump();
         bDoubleJump = true;
-    } else if(bDoubleJump) {
+    }
+    else if (bDoubleJump)
+    {
         LaunchCharacter(FVector(0.f, 0.f, JumpVelocity), false, true);
         bDoubleJump = false;
     }
 }
 
-
-void ASideRunnerPaperCharacter::OnDeath(){
-    if(!bDeath){
+void ASideRunnerPaperCharacter::OnDeath()
+{
+    if (!bDeath)
+    {
         bDeath = true;
         SetActorEnableCollision(false);
         LaunchCharacter(FVector(0.f, 0.f, JumpVelocity * 2), true, true);
@@ -140,24 +149,27 @@ void ASideRunnerPaperCharacter::OnDeath(){
         // GetSprite()->SetRelativeRotation(); // Other rotation here
 
         // This does not work: GetWorld()->GetTimerManager().SetTimer(DelayHandler, 0.2f, false);
-        GetWorld()->GetTimerManager().SetTimer(ShowGameOverScreenDelayHandler, this,  &ASideRunnerPaperCharacter::ShowGameOverScreen, 2.f);
+        GetWorld()->GetTimerManager().SetTimer(ShowGameOverScreenDelayHandler, this, &ASideRunnerPaperCharacter::ShowGameOverScreen, 2.f);
 
-        GetWorld()->GetTimerManager().SetTimer(StopMovementDelayHandler, this,  &ASideRunnerPaperCharacter::StopMovement, 4.f);
+        GetWorld()->GetTimerManager().SetTimer(StopMovementDelayHandler, this, &ASideRunnerPaperCharacter::StopMovement, 4.f);
     }
 }
 
-void ASideRunnerPaperCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent){
+void ASideRunnerPaperCharacter::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
+{
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASideRunnerPaperCharacter::Move);
 }
 
-        // TODO: Delay!!!
-void ASideRunnerPaperCharacter::StopMovement(){
-    UE_LOG(LogTemp, Warning, TEXT("Character's timer expired!"));    
+// TODO:  What's about this
+void ASideRunnerPaperCharacter::StopMovement()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Character's timer expired!"));
     GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
     GetCharacterMovement()->StopMovementImmediately();
 }
 
-void ASideRunnerPaperCharacter::ShowGameOverScreen(){
+void ASideRunnerPaperCharacter::ShowGameOverScreen()
+{
     if (Ref_GameMode)
     {
         Ref_GameMode->GameOver();

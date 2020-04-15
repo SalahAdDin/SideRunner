@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/SlateWrapperTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 #include "SideRunnerGameInstance.h"
 #include "SideRunnerPaperCharacter.h"
 #include "SideRunnerSaveGame.h"
@@ -98,7 +99,7 @@ void ASideRunnerGameModeBase::UpdateHighScore()
             UE_LOG(LogTemp, Warning, TEXT("HighScore: %d"), Ref_SaveGame->HighScore);
         }
         else
-            UE_LOG(LogTemp, Warning, TEXT("No savegame yet."));
+            UE_LOG(LogTemp, Warning, TEXT("No SaveGame yet."));
     }
 }
 

@@ -15,5 +15,8 @@ class SIDERUNNER_API USideRunnerSaveGame : public USaveGame
 	GENERATED_BODY()
 
 public:
-	int HighScore;
+
+	// UPROPERTY is required to enables UE4 to handle its values
+	UPROPERTY()
+	int HighScore = 0;
 };

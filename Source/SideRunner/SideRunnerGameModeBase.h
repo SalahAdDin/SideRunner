@@ -14,7 +14,10 @@ class SIDERUNNER_API ASideRunnerGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	class USideRunnerGameInstance *Ref_GameInstance;
+	
+	UPROPERTY()
 	class USideRunnerSaveGame *Ref_SaveGame;
 
 	void BeginPlay() override;

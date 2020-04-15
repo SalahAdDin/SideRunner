@@ -17,12 +17,14 @@ class SIDERUNNER_API USideRunnerGameInstance : public UGameInstance
 	TSubclassOf<class UUserWidget> HUDWidgetClass;
 	TSubclassOf<class UUserWidget> GameOverWidgetClass;
 
-	class UUserWidget *Ref_GameOver;
+	UPROPERTY()
+	class UUserWidget *Ref_GameOver = nullptr;
 
 public:
 	USideRunnerGameInstance();
 
-	class UUserWidget *Ref_HUD;
+	UPROPERTY()
+	class UUserWidget *Ref_HUD = nullptr;
 
 	UFUNCTION(BlueprintCallable, Category = "User Interface")
 	void CallHUDWBP();

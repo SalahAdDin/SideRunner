@@ -145,11 +145,11 @@ void ASideRunnerPaperCharacter::OnDeath()
         SetActorEnableCollision(false);
         LaunchCharacter(FVector(0.f, 0.f, JumpVelocity * 2), true, true);
 
-        // TODO: Here make anotther timeline for OnDeathRotation
+        // TODO: Here make another timeline for OnDeathRotation
         // GetSprite()->SetRelativeRotation(); // Other rotation here
 
         // This does not work: GetWorld()->GetTimerManager().SetTimer(DelayHandler, 0.2f, false);
-        GetWorld()->GetTimerManager().SetTimer(ShowGameOverScreenDelayHandler, this, &ASideRunnerPaperCharacter::ShowGameOverScreen, 2.f);
+        GetWorld()->GetTimerManager().SetTimer(ShowGameOverScreenDelayHandler, this, &ASideRunnerPaperCharacter::ShowGameOverScreen, 2.5f);
 
         GetWorld()->GetTimerManager().SetTimer(StopMovementDelayHandler, this, &ASideRunnerPaperCharacter::StopMovement, 4.f);
     }

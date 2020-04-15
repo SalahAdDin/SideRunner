@@ -14,7 +14,8 @@ class SIDERUNNER_API ASideRunnerSpawner : public AActor
 
 	FTimerHandle DelayHandler;
 
-	class ASideRunnerPlatform *Ref_Platform;
+	UPROPERTY()
+	class ASideRunnerPlatform *Ref_Platform = nullptr;
 
 	UPROPERTY(Category = Actor, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent *TriggerBox = nullptr;

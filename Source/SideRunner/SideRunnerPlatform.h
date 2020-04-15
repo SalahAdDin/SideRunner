@@ -11,7 +11,8 @@ class SIDERUNNER_API ASideRunnerPlatform : public AActor
 {
 	GENERATED_BODY()
 
-	class ASideRunnerGameModeBase *Ref_GameMode;
+	UPROPERTY()
+	class ASideRunnerGameModeBase *Ref_GameMode = nullptr;
 
 	/* For further developments: we can choose more than two types os block and add to the platform since the editor */
 	UPROPERTY()
@@ -24,7 +25,7 @@ class SIDERUNNER_API ASideRunnerPlatform : public AActor
 	class UChildActorComponent *Obstacle = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent *Root;
+	USceneComponent *Root = nullptr;
 
 protected:
 	// Called when the game starts or when spawned

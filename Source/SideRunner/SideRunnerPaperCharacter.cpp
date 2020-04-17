@@ -51,14 +51,16 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter()
     GetSprite()->SetIsReplicated(true);
     bReplicates = true;
 
-    /* This is the way using a Blueprint Curve */
-    static ConstructorHelpers::FObjectFinder<UCurveFloat> PlayCurve(TEXT("/Game/Blueprints/Utils/Curve_PlayRotation_Float"));
-    check(PlayCurve.Succeeded());
-    PlayRotation = PlayCurve.Object;
+    /* This is the way using a Blueprint Curve, 
+    but the best way is leaving the designer to design and choose the curves using the curve editor.
+    */
+    // static ConstructorHelpers::FObjectFinder<UCurveFloat> PlayCurve(TEXT("/Game/Blueprints/Utils/Curve_PlayRotation_Float"));
+    // check(PlayCurve.Succeeded());
+    // PlayRotation = PlayCurve.Object;
 
-    static ConstructorHelpers::FObjectFinder<UCurveFloat> DeathCurve(TEXT("/Game/Blueprints/Utils/Curve_DeathRotation_Float"));
-    check(DeathCurve.Succeeded());
-    DeathRotation = DeathCurve.Object;
+    // static ConstructorHelpers::FObjectFinder<UCurveFloat> DeathCurve(TEXT("/Game/Blueprints/Utils/Curve_DeathRotation_Float"));
+    // check(DeathCurve.Succeeded());
+    // DeathRotation = DeathCurve.Object;
 
     /* This is the way creating the curve with code, it does not work for me 
     PlayRotation = NewObject<UCurveFloat>();
@@ -69,11 +71,73 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter()
     DeathRotation->FloatCurve.AddKey(0.f, 0.f);
     DeathRotation->FloatCurve.AddKey(1.f, -512.f);
     */
+}
+
+void ASideRunnerPaperCharacter::RotatePlayer()
+{
+	float TimelineValue;
+	float RotationFloatValue;
+
+	/* As whatever the status of the character (dead ot not) the rotation will be the same workflow,
+		and as we just change the Curve values, we handle both rotation behaviour in the same function
+		based on the character's status
+	*/
+	if (bDeath)
+	{
+		TimelineValue = OnDeathRotation.GetPlaybackPosition();
+		if (DeathRotation)
+		{
+			RotationFloatValue = DeathRotation->GetFloatValue(TimelineValue);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("There is no such DeathRotation curve."));
+		}
+	} else
+	{
+		TimelineValue = OnPlayRotation.GetPlaybackPosition();
+
+		if (PlayRotation)
+		{
+			RotationFloatValue = PlayRotation->GetFloatValue(TimelineValue);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("There is no such PlayRotation curve."));
+		}
+	}
+
+	GetSprite()->SetRelativeRotation(FRotator(RotationFloatValue, 0.f, 0.f));
+}
+
+void ASideRunnerPaperCharacter::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    if (OnPlayRotation.IsPlaying())
+        OnPlayRotation.TickTimeline(DeltaSeconds);
+
+	if (OnDeathRotation.IsPlaying()) 
+		OnDeathRotation.TickTimeline(DeltaSeconds);
+}
+
+void ASideRunnerPaperCharacter::BeginPlay()
+{
+	// TODO: DeathRotation is being destriyed here
+    Super::BeginPlay();
+
+    UWorld *world = GetWorld();
+
+    if (world)
+    {
+        Ref_GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
+    }
 
     FOnTimelineFloat TimelineCallback;
     FOnTimelineEventStatic TimelineFinishedCallback;
 
     TimelineCallback.BindUFunction(this, "RotatePlayer");
+
     if (PlayRotation)
     {
         OnPlayRotation.AddInterpFloat(PlayRotation, TimelineCallback, TEXT("Player Rotation"));
@@ -85,40 +149,18 @@ ASideRunnerPaperCharacter::ASideRunnerPaperCharacter()
     {
         UE_LOG(LogTemp, Warning, TEXT("There is no Curvefloat Object here!"));
     }
-}
 
-void ASideRunnerPaperCharacter::RotatePlayer()
-{
-    float TimelineValue = OnPlayRotation.GetPlaybackPosition();
-
-    if (PlayRotation)
-    {
-        float PlayRotationFloatValue = PlayRotation->GetFloatValue(TimelineValue);
-        GetSprite()->SetRelativeRotation(FRotator(PlayRotationFloatValue, 0.f, 0.f));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("There is no such CurveFloat"));
-    }
-}
-
-void ASideRunnerPaperCharacter::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
-    if (OnPlayRotation.IsPlaying())
-        OnPlayRotation.TickTimeline(DeltaSeconds);
-}
-
-void ASideRunnerPaperCharacter::BeginPlay()
-{
-    Super::BeginPlay();
-
-    UWorld *world = GetWorld();
-
-    if (world)
-    {
-        Ref_GameMode = world->GetAuthGameMode<ASideRunnerGameModeBase>();
-    }
+	if (DeathRotation)
+	{
+		OnDeathRotation.AddInterpFloat(DeathRotation, TimelineCallback, TEXT("Death Rotation"));
+		OnDeathRotation.SetLooping(true);
+		OnDeathRotation.SetTimelineLength(1.f);
+		OnDeathRotation.SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("There is no DeathRotation curve here!"));
+	}
 
     OnPlayRotation.Play();
 }
@@ -146,7 +188,8 @@ void ASideRunnerPaperCharacter::OnDeath()
         LaunchCharacter(FVector(0.f, 0.f, JumpVelocity * 2), true, true);
 
         // TODO: Here make another timeline for OnDeathRotation
-        // GetSprite()->SetRelativeRotation(); // Other rotation here
+		OnPlayRotation.Stop();
+		OnDeathRotation.Play();
 
         // This does not work: GetWorld()->GetTimerManager().SetTimer(DelayHandler, 0.2f, false);
         GetWorld()->GetTimerManager().SetTimer(ShowGameOverScreenDelayHandler, this, &ASideRunnerPaperCharacter::ShowGameOverScreen, 2.5f);

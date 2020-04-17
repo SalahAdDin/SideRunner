@@ -22,23 +22,17 @@ class SIDERUNNER_API ASideRunnerPaperCharacter : public APaperCharacter
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	// class USpringArmComponent* CameraBoom;
 
-	// FTimerHandle DelayHandler;
-
 	FTimeline OnDeathRotation;
 	FTimeline OnPlayRotation;
 
 	FTimerHandle ShowGameOverScreenDelayHandler;
 	FTimerHandle StopMovementDelayHandler;
 
-	class UCurveFloat *DeathRotation;
-
-	class UCurveFloat *PlayRotation;
-
 	bool bDoubleJump;
 
-	class ASideRunnerGameModeBase *Ref_GameMode;
+	class ASideRunnerGameModeBase *Ref_GameMode = nullptr;
 
-	class UTextRenderComponent *TextComponent;
+	class UTextRenderComponent *TextComponent = nullptr;
 
 	void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -63,6 +57,12 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite, Category = Behavior)
 	bool bDeath;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Animation)
+	class UCurveFloat *DeathRotation = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Animation)
+	class UCurveFloat *PlayRotation = nullptr;
 
 	ASideRunnerPaperCharacter();
 

@@ -13,5 +13,33 @@ UCLASS()
 class SIDERUNNER_API ASideRunnerGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	class USideRunnerGameInstance *Ref_GameInstance;
 	
+	UPROPERTY()
+	class USideRunnerSaveGame *Ref_SaveGame;
+
+	void BeginPlay() override;
+
+public:
+	UPROPERTY(BlueprintReadOnly, Category = Score)
+	int Score;
+
+	UPROPERTY(BlueprintReadOnly, Category = Score)
+	int HighScore;
+
+	ASideRunnerGameModeBase();
+
+	UFUNCTION(BlueprintCallable, Category = Behavior)
+	void GameOver();
+
+	UFUNCTION(BlueprintCallable, Category = Behavior)
+	void GetSaveGame();
+
+	UFUNCTION(BlueprintCallable, Category = Behavior)
+	void UpdateHighScore();
+
+	UFUNCTION(BlueprintCallable, Category = Behavior)
+	void UpdateScore();
 };

@@ -9,6 +9,6 @@ public class SideRunnerEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "SideRunner" } );
+		ExtraModuleNames.Add("SideRunner");
 	}
 }

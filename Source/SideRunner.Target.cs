@@ -9,6 +9,6 @@ public class SideRunnerTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "SideRunner" } );
+		ExtraModuleNames.Add("SideRunner");
 	}
 }

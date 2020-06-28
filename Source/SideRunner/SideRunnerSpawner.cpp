@@ -47,6 +47,7 @@ void ASideRunnerSpawner::BeginPlay()
 				NULL,
 				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 			Ref_Platform->bInitialPlatform = true;
+			Ref_Platform->FinishSpawning();
 			check(Ref_Platform);
 
 			world->GetTimerManager().SetTimer(DelayHandler, this, &ASideRunnerSpawner::SpawnPlatform, 0.5f);

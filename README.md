@@ -5,4 +5,4 @@ The concept is very simple: you are the rock and you have to jump over each plat
 
 This repository has two versions: [C++](https://github.com/SalahAdDin/SideRunner/tree/c++) and [Blueprint](https://github.com/SalahAdDin/SideRunner/tree/blueprint).
 
-Feel fre to make pull request and issues.
+Feel free to make pull request and issues.
